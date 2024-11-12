@@ -22,6 +22,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <boost/describe.hpp>
 
 namespace service {
 
@@ -57,5 +58,7 @@ struct Service {
 			   detectedExternalIPv4_24Networks == other.detectedExternalIPv4_24Networks && detectedExternalIPv6Networks == other.detectedExternalIPv6Networks;
 	}
 };
+
+BOOST_DESCRIBE_STRUCT(Service, (), (pid, endpoint, domain, scheme, internalClientsNumber, externalClientsNumber, detectedExternalIPv4_16Networks, detectedExternalIPv4_24Networks, detectedExternalIPv6Networks))
 
 } // namespace service

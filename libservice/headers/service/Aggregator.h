@@ -24,6 +24,7 @@
 #include <cstdint>
 #include <unordered_map>
 #include <vector>
+#include <mutex>
 
 template <>
 struct std::hash<std::pair<uint32_t, std::string>> {
@@ -64,7 +65,7 @@ protected:
 private:
 	const IpAddressChecker& ipChecker;
 
-	std::mutex servicesMutex{};
+	mutable std::mutex servicesMutex{};
 	ServiceStorage services;
 };
 

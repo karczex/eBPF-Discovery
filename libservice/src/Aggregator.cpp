@@ -212,6 +212,7 @@ std::mutex& Aggregator::getServicesMutex() {
 }
 
 bool Aggregator::getEnableNetworkCounters() const {
+	std::lock_guard<std::mutex> lock(servicesMutex);
 	return enableNetworkCounters;
 }
 
