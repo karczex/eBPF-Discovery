@@ -48,6 +48,7 @@ class Aggregator {
 private:
 	using ServiceKey = std::pair<uint32_t, std::string>;
 	using ServiceStorage = std::unordered_map<ServiceKey, Service>;
+	using ServicesList = std::vector<std::reference_wrapper<Service>>;
 
 public:
 	Aggregator(const service::IpAddressChecker& ipChecker, bool _enableNetworkCounters);

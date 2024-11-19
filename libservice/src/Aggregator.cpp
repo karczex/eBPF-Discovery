@@ -170,6 +170,7 @@ void Aggregator::newRequest(const httpparser::HttpRequest& request, const Discov
 std::vector<std::reference_wrapper<Service>> Aggregator::collectServices() {
 	std::lock_guard<std::mutex> lock(servicesMutex);
 	std::vector<std::reference_wrapper<Service>> servicesVec;
+
 	servicesVec.reserve(services.size());
 
 	for (auto& pair : services) {
