@@ -36,10 +36,10 @@ struct testClass {
 
 BOOST_DESCRIBE_STRUCT(testClass, (), (str, empty))
 
-TEST_F(Json, filterEmptyKeys){
+TEST_F(Json, removeEmptyKeys){
 	
 	std::vector<testClass> vtc(4, {"bar", ""});
-	 auto json = boost::json::value_from(vtc);
+	auto json = boost::json::value_from(vtc);
 	boost::json::ext::remove_empty_keys(json);
 	
 	std::stringstream buffer;
@@ -68,15 +68,17 @@ TEST_F(Json, servicesToJson) {
 	internalServices.push_back(service5);
 
 	boost::json::object outJson{};
-	outJson["service"] = boost::json::value_from(internalServices);
+	auto v =  boost::json::value_from(internalServices);
+	boost::json::ext::remove_empty_keys(v);
 
+	outJson["service"] = v;
 	std::stringstream buffer;
 	buffer << outJson;
 	// clang-format off
 	const std::string expected{"{\"service\":["
-		"{\"pid\":1,\"endpoint\":\"/endpoint/1\",\"domain\":\"\",\"scheme\":\"\",\"internalClientsNumber\":1,\"externalClientsNumber\":2},"
-		"{\"pid\":2,\"endpoint\":\"/endpoint/1\",\"domain\":\"\",\"scheme\":\"\",\"internalClientsNumber\":1,\"externalClientsNumber\":2},"
-		"{\"pid\":3,\"endpoint\":\"/endpoint/2\",\"domain\":\"\",\"scheme\":\"\",\"internalClientsNumber\":1,\"externalClientsNumber\":2},"
+		"{\"pid\":1,\"endpoint\":\"/endpoint/1\",\"externalClientsNumber\":2,\"internalClientsNumber\":1},"
+		"{\"pid\":2,\"endpoint\":\"/endpoint/1\",\"externalClientsNumber\":2,\"internalClientsNumber\":1},"
+		"{\"pid\":3,\"endpoint\":\"/endpoint/2\",\"externalClientsNumber\":2,\"internalClientsNumber\":1},"
 		"{\"pid\":4,\"endpoint\":\"google.com/endpoint/3\",\"domain\":\"google.com\",\"scheme\":\"http\",\"internalClientsNumber\":1,\"externalClientsNumber\":2},"
 		"{\"pid\":5,\"endpoint\":\"dynatrace.com/endpoint/4\",\"domain\":\"dynatrace.com\",\"scheme\":\"https\",\"internalClientsNumber\":1,\"externalClientsNumber\":2}]}"};
 	// clang-format on

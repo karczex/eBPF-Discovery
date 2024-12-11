@@ -33,33 +33,30 @@ namespace boost::json {
 
 
 namespace boost::json::ext {
-
-void remove_empty_keys(boost::json::object& obj) {
-    for (auto it = obj.begin(); it != obj.end(); ) {
-        if (it->value().is_string() && it->value().get_string().empty()) {
-            it = obj.erase(it); // Erase returns the next iterator
-        } else {
-            ++it; // Move to the next element
-        }
-    }
-}
-
-void remove_empty_keys(boost::json::value& val)
-{
-  if(val.is_array()){
-    auto &arr = val.get_array();
-    for(auto &e : arr){
-      remove_empty_keys(e);
-    }
-  } else if(val.is_object()){
-    remove_empty_keys(val.get_object());
+  void remove_empty_keys(boost::json::object& obj) {
+      for (auto it = obj.begin(); it != obj.end(); ) {
+          boost::json::value val = it->value();
+          if (val.is_string() && val.get_string().empty()) {
+              it = obj.erase(it); // Erase returns the next iterator
+          } else if(val.is_array() && val.get_array().empty()) {
+              it = obj.erase(it);
+          } else {
+              ++it; // Move to the next element
+          }
+      }
   }
-  
+
+  void remove_empty_keys(boost::json::value& val) {
+    if(val.is_array()){
+      auto &arr = val.get_array();
+      for(auto &e : arr){
+        remove_empty_keys(e);
+      }
+    } else if(val.is_object()){
+      remove_empty_keys(val.get_object());
+    }
+  }
 }
-
-
-
-} // boost::json::ext
 
 template<typename T>
 boost::json::object toJson(std::string_view key, T convertibleValue) {
