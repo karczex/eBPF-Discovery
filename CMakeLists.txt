@@ -34,7 +34,8 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
 endif ()
 
 if ("${PROJECT_VERSION}" STREQUAL "")
-    message(FATAL_ERROR "Project version has not been provided\n    Please, provide project version using -DPROJECT_VERSION")
+    set(PROJECT_VERSION 0.0.0)
+    message(WARNING "Project version has not been provided so it is set to default value: ${PROJECT_VERSION}\n Please, provide project version using -DPROJECT_VERSION")
 endif ()
 
 string(REGEX MATCH "([0-9]+)\.([0-9]+)\.([0-9]+)" _ "${PROJECT_VERSION}")
