@@ -63,7 +63,7 @@ void Discovery::outputServicesToStdout() {
 		return;
 	}
 
-	std::cout << toJson("services",services) << std::endl;
+	std::cout << toJson("services", services) << std::endl;
 	serviceAggregator.clear();
 }
 
