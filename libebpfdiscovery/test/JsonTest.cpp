@@ -38,13 +38,14 @@ BOOST_DESCRIBE_STRUCT(testClass, (), (str, empty))
 TEST_F(JsonTest, removeEmptyKeys){
 	
 	std::vector<testClass> vtc(4, {"bar", ""});
-	auto json = boost::json::value_from(vtc);
+	boost::json::object json{{"key", boost::json::value_from(vtc)}};
+
 	boost::json::ext::remove_empty_keys(json);
 	
 	std::stringstream buffer;
 	buffer << json;	  
 	
-	const std::string expected{"[{\"str\":\"bar\"},{\"str\":\"bar\"},{\"str\":\"bar\"},{\"str\":\"bar\"}]"};
+	const std::string expected{"\"key\":[{\"str\":\"bar\"},{\"str\":\"bar\"},{\"str\":\"bar\"},{\"str\":\"bar\"}]"};
 
 	EXPECT_EQ(buffer.str(), expected);
 } 
@@ -66,11 +67,9 @@ TEST_F(JsonTest, servicesToJson) {
 	internalServices.push_back(service4);
 	internalServices.push_back(service5);
 
-	boost::json::object outJson{};
-	auto v =  boost::json::value_from(internalServices);
-	boost::json::ext::remove_empty_keys(v);
+	boost::json::object outJson{{"service", boost::json::value_from(internalServices)}};
+	boost::json::ext::remove_empty_keys(outJson);
 
-	outJson["service"] = v;
 	std::stringstream buffer;
 	buffer << outJson;
 	// clang-format off
@@ -114,12 +113,9 @@ TEST_F(JsonTest, servicesToJsonNetworkCounters) {
 	internalServices.emplace_back(service4);
 	internalServices.emplace_back(service5);
 
+	boost::json::object outJson{{"service", boost::json::value_from(internalServices)}};
+	boost::json::ext::remove_empty_keys(outJson);
 	
-	boost::json::object outJson{};
-	auto v =  boost::json::value_from(internalServices);
-	boost::json::ext::remove_empty_keys(v);
-
-	outJson["service"] = v;
 	std::stringstream result;
 	result << outJson;
 
