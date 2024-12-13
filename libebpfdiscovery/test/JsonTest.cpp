@@ -85,12 +85,13 @@ TEST_F(JsonTest, servicesToJson) {
 	
 	// clang-format off
 	const std::string expected{"{\"service\":["
-		"{\"pid\":1,\"endpoint\":\"/endpoint/1\",\"externalClientsNumber\":2,\"internalClientsNumber\":1},"
-		"{\"pid\":2,\"endpoint\":\"/endpoint/1\",\"externalClientsNumber\":2,\"internalClientsNumber\":1},"
-		"{\"pid\":3,\"endpoint\":\"/endpoint/2\",\"externalClientsNumber\":2,\"internalClientsNumber\":1},"
+		"{\"pid\":1,\"endpoint\":\"/endpoint/1\",\"internalClientsNumber\":1,\"externalClientsNumber\":2},"
+		"{\"pid\":2,\"endpoint\":\"/endpoint/1\",\"internalClientsNumber\":1,\"externalClientsNumber\":2},"
+		"{\"pid\":3,\"endpoint\":\"/endpoint/2\",\"internalClientsNumber\":1,\"externalClientsNumber\":2},"
 		"{\"pid\":4,\"endpoint\":\"google.com/endpoint/3\",\"domain\":\"google.com\",\"scheme\":\"http\",\"internalClientsNumber\":1,\"externalClientsNumber\":2},"
 		"{\"pid\":5,\"endpoint\":\"dynatrace.com/endpoint/4\",\"domain\":\"dynatrace.com\",\"scheme\":\"https\",\"internalClientsNumber\":1,\"externalClientsNumber\":2}]}"};
 	// clang-format on
+	EXPECT_TRUE(is_parsable_back(buffer.str()));
 	EXPECT_EQ(buffer.str(), expected);
 }
 
@@ -125,11 +126,9 @@ TEST_F(JsonTest, servicesToJsonNetworkCounters) {
 	internalServices.emplace_back(service5);
 
 	boost::json::object outJson{{"service", boost::json::value_from(internalServices)}};
-	boost::json::ext::remove_empty_keys(outJson);
-	
-	std::stringstream result;
-	result << outJson;
 
+	std::stringstream result;
+	boost::json::ext::pretty_print(result, outJson);
 	const std::string expected{"{\"service\":[{\"pid\":1,\"endpoint\":\"/endpoint/"
 							   "1\",\"internalClientsNumber\":1,\"externalClientsNumber\":3,\"externalIPv4_16ClientNets\":2,\"externalIPv4_24ClientNets\":3},{\"pid\":2,\"endpoint\":\"/endpoint/"
 							   "1\",\"internalClientsNumber\":1,\"externalClientsNumber\":3,\"externalIPv4_16ClientNets\":2,\"externalIPv4_24ClientNets\":3},{\"pid\":3,\"endpoint\":\"/endpoint/"
