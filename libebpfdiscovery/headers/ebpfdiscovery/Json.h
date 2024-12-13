@@ -40,8 +40,7 @@ pretty_print( std::ostream& os, boost::json::value const& jv)
         auto const& obj = jv.get_object();
         if(! obj.empty())
         {
-            auto it = obj.begin();
-            for(;;)
+            for(auto it = obj.begin(); it != obj.end(); ++it)
             {
                 auto val = it->value();
                 if(val.is_string() && (val.get_string().size() == 0)) {
@@ -50,11 +49,9 @@ pretty_print( std::ostream& os, boost::json::value const& jv)
                 os << "{";
                 os << json::serialize(it->key()) << ":";
                 pretty_print(os, val);
-                if(++it == obj.end())
-                    break;
+                os << "}";
             }
         }
-        os << "}";
         break;
     }
 
