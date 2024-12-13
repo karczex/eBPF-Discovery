@@ -31,7 +31,7 @@ namespace boost::json {
 namespace boost::json::ext {
 
 void
-pretty_print( std::ostream& os, boost::json::value const& jv)
+print( std::ostream& os, boost::json::value const& jv)
 {
     switch(jv.kind())
     {
@@ -41,21 +41,17 @@ pretty_print( std::ostream& os, boost::json::value const& jv)
         if(! obj.empty())
         {
             os << "{";
-            for(auto it = obj.begin(); it != obj.end(); )
+            for(auto it = obj.begin(); it != obj.end(); ++it )
             { 
                 auto val = it->value();
                 if( val.is_null() || (val.is_string() && (val.get_string().size() == 0))) {
-                  ++it;
                   continue;
                 }
                 if(it != obj.begin()){
                     os << ",";
                 } 
                 os << json::serialize(it->key()) << ":";
-                pretty_print(os, val);
-                if(++it == obj.end()){
-                    continue;
-                }
+                print(os, val);
            }
             os << "}";
         }
@@ -69,12 +65,12 @@ pretty_print( std::ostream& os, boost::json::value const& jv)
         {
             os << "[";
             auto it = arr.begin();
-            for(auto it = arr.begin(); it != arr.end();)
+            for(auto it = arr.begin(); it != arr.end(); ++it)
             {
-                pretty_print(os, *it);
-                if(++it != arr.end()){
+                if(it != arr.begin()){
                     os << ",";
                 }
+                print(os, *it);
             }
         }
         os << "]";
@@ -86,10 +82,3 @@ pretty_print( std::ostream& os, boost::json::value const& jv)
 
 }
 } //boost::json::ext
-
-template<typename T>
-boost::json::object toJson(std::string_view key, T convertibleValue) {
-	boost::json::object outJson{};
-	outJson[key] = boost::json::value_from(convertibleValue);
-	return outJson; 
-}

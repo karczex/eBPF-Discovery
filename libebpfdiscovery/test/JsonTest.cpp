@@ -49,11 +49,9 @@ TEST_F(JsonTest, removeEmptyKeys){
 	
 	std::vector<testClass> vtc(4, {"bar", ""});
 	boost::json::object json{{"key", boost::json::value_from(vtc)}};
-
-	// boost::json::ext::remove_empty_keys(json);
 	
 	std::stringstream buffer;
-	boost::json::ext::pretty_print(buffer, json);
+	boost::json::ext::print(buffer, json);
 	
 	const std::string expected{"{\"key\":[{\"str\":\"bar\"},{\"str\":\"bar\"},{\"str\":\"bar\"},{\"str\":\"bar\"}]}"};
 
@@ -81,7 +79,7 @@ TEST_F(JsonTest, servicesToJson) {
 	boost::json::object outJson{{"service", boost::json::value_from(internalServices)}};
 
 	std::stringstream buffer;
-	boost::json::ext::pretty_print(buffer, outJson);
+	boost::json::ext::print(buffer, outJson);
 	
 	// clang-format off
 	const std::string expected{"{\"service\":["
@@ -128,7 +126,7 @@ TEST_F(JsonTest, servicesToJsonNetworkCounters) {
 	boost::json::object outJson{{"service", boost::json::value_from(internalServices)}};
 
 	std::stringstream result;
-	boost::json::ext::pretty_print(result, outJson);
+	boost::json::ext::print(result, outJson);
 	const std::string expected{"{\"service\":[{\"pid\":1,\"endpoint\":\"/endpoint/"
 							   "1\",\"internalClientsNumber\":1,\"externalClientsNumber\":3,\"externalIPv4_16ClientNets\":2,\"externalIPv4_24ClientNets\":3},{\"pid\":2,\"endpoint\":\"/endpoint/"
 							   "1\",\"internalClientsNumber\":1,\"externalClientsNumber\":3,\"externalIPv4_16ClientNets\":2,\"externalIPv4_24ClientNets\":3},{\"pid\":3,\"endpoint\":\"/endpoint/"

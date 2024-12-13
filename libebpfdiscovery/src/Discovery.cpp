@@ -63,7 +63,9 @@ void Discovery::outputServicesToStdout() {
 		return;
 	}
 
-	std::cout << toJson("services", services) << std::endl;
+	boost::json::object outJson{{"services", boost::json::value_from(services)}};
+  boost::json::ext::print(std::cout, outJson);
+	
 	serviceAggregator.clear();
 }
 
