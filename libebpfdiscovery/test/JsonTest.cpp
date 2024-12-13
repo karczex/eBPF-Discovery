@@ -40,12 +40,12 @@ TEST_F(JsonTest, removeEmptyKeys){
 	std::vector<testClass> vtc(4, {"bar", ""});
 	boost::json::object json{{"key", boost::json::value_from(vtc)}};
 
-	boost::json::ext::remove_empty_keys(json);
+	// boost::json::ext::remove_empty_keys(json);
 	
 	std::stringstream buffer;
-	buffer << json;	  
+	boost::json::ext::pretty_print(buffer, json);
 	
-	const std::string expected{"\"key\":[{\"str\":\"bar\"},{\"str\":\"bar\"},{\"str\":\"bar\"},{\"str\":\"bar\"}]"};
+	const std::string expected{"{\"key\":[{\"str\":\"bar\"},{\"str\":\"bar\"},{\"str\":\"bar\"},{\"str\":\"bar\"}]}"};
 
 	EXPECT_EQ(buffer.str(), expected);
 } 
@@ -68,10 +68,10 @@ TEST_F(JsonTest, servicesToJson) {
 	internalServices.push_back(service5);
 
 	boost::json::object outJson{{"service", boost::json::value_from(internalServices)}};
-	boost::json::ext::remove_empty_keys(outJson);
 
 	std::stringstream buffer;
-	buffer << outJson;
+	boost::json::ext::pretty_print(buffer, outJson);
+	
 	// clang-format off
 	const std::string expected{"{\"service\":["
 		"{\"pid\":1,\"endpoint\":\"/endpoint/1\",\"externalClientsNumber\":2,\"internalClientsNumber\":1},"

@@ -18,6 +18,7 @@
 #include <boost/json.hpp>
 #include <string_view>
 #include <chrono>
+#include <unordered_map>
 
 namespace boost::json {
 	  template<typename T>
@@ -28,30 +29,75 @@ namespace boost::json {
 
 
 namespace boost::json::ext {
-  void remove_empty_keys(boost::json::object& obj) {
-      for (auto it = obj.begin(); it != obj.end(); ) {
-          boost::json::value val = it->value();
-          if (val.is_string() && val.get_string().empty()) {
-              it = obj.erase(it); // Erase returns the next iterator
-          } else if(val.is_array() && val.get_array().empty()) {
-              it = obj.erase(it);
-          } else {
-              ++it; // Move to the next element
-          }
-      }
+bool is_empty(boost::json::object const &obj){
+  if(obj.empty()){
+    return true;
   }
+  for(auto it = obj.begin(); it != obj.end(); it++) {
+    boost::json::value val = it->value();
 
-  void remove_empty_keys(boost::json::value& val) {
-    if(val.is_array()){
-      auto &arr = val.get_array();
-      for(auto &e : arr){
-        remove_empty_keys(e);
-      }
-    } else if(val.is_object()){
-      remove_empty_keys(val.get_object());
+      if (val.is_string() && !( val.get_string().size() == 0) ){
+              std::cout << "not empty val: " << val << std::endl; 
+        return false;
     }
   }
+  return false;
 }
+
+void
+pretty_print( std::ostream& os, boost::json::value const& jv)
+{
+    switch(jv.kind())
+    {
+    case json::kind::object:
+    {
+        auto const& obj = jv.get_object();
+        if(! obj.empty())
+        {
+            auto it = obj.begin();
+            for(;;)
+            {
+                auto val = it->value();
+                if(val.is_string() && (val.get_string().size() == 0)) {
+                  break;
+                } 
+                os << "{";
+                os << json::serialize(it->key()) << ":";
+                pretty_print(os, val);
+                if(++it == obj.end())
+                    break;
+            }
+        }
+        os << "}";
+        break;
+    }
+
+    case json::kind::array:
+    {
+        os << "[";
+        auto const& arr = jv.get_array();
+        if(! arr.empty())
+        {
+            auto it = arr.begin();
+            for(;;)
+            {
+                pretty_print(os, *it);
+                if(++it == arr.end())
+                    break;
+                os << ",";
+            }
+        }
+        os << "]";
+        break;
+    }
+    case json::kind::null:
+        break;
+    default:
+        os << jv;
+    }
+
+}
+} //boost::json::ext
 
 template<typename T>
 boost::json::object toJson(std::string_view key, T convertibleValue) {
