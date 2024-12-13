@@ -47,14 +47,16 @@ pretty_print( std::ostream& os, boost::json::value const& jv)
                 if( val.is_null() || (val.is_string() && (val.get_string().size() == 0))) {
                   ++it;
                   continue;
+                }
+                if(it != obj.begin()){
+                    os << ",";
                 } 
                 os << json::serialize(it->key()) << ":";
                 pretty_print(os, val);
-                if(++it ==obj.end()){
+                if(++it == obj.end()){
                     continue;
                 }
-                os << ",";
-            }
+           }
             os << "}";
         }
         break;
