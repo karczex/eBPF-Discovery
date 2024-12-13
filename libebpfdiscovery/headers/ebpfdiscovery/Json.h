@@ -43,7 +43,6 @@ pretty_print( std::ostream& os, boost::json::value const& jv)
             os << "{";
             for(auto it = obj.begin(); it != obj.end(); )
             { 
-                auto next = it++;
                 auto val = it->value();
                 if( val.is_null() || (val.is_string() && (val.get_string().size() == 0))) {
                   ++it;

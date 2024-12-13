@@ -106,18 +106,18 @@ TEST_F(JsonTest, servicesToJsonNetworkCounters) {
 			{0xAC8F06, std::chrono::steady_clock::now()},
 			{0xACC72D, std::chrono::steady_clock::now()}
 	};
-	std::unordered_map<std::array<uint8_t, service::ipv6NetworkPrefixBytesLen>, std::chrono::time_point<std::chrono::steady_clock>, service::ArrayHasher> detectedExternalIPv6Networks = {
+	std::unordered_map<std::array<uint8_t, service::ipv6NetworkPrefixBytesLen>, std::chrono::time_point<std::chrono::steady_clock>, service::ArrayHasher> externalIPv6ClientsNets = {
 			{{0x20, 0x01, 0x48, 0x60, 0x48, 0x60}, std::chrono::steady_clock::now()},
 			{{0x12, 0x34, 0x23, 0x45, 0x34, 0x56}, std::chrono::steady_clock::now()}
 	};
 
 	std::vector<std::reference_wrapper<service::Service>> internalServices;
-	service::Service service1{.pid = 1, .endpoint = "/endpoint/1", .internalClientsNumber = 1, .externalClientsNumber = 3, .detectedExternalIPv4_16Networks = detectedExternalIPv416Networks, .detectedExternalIPv4_24Networks = detectedExternalIPv424Networks};
-	service::Service service2{.pid = 2, .endpoint = "/endpoint/1", .internalClientsNumber = 1, .externalClientsNumber = 3, .detectedExternalIPv4_16Networks = detectedExternalIPv416Networks, .detectedExternalIPv4_24Networks = detectedExternalIPv424Networks};
-	service::Service service3{.pid = 3, .endpoint = "/endpoint/2", .internalClientsNumber = 1, .externalClientsNumber = 3, .detectedExternalIPv4_16Networks = detectedExternalIPv416Networks, .detectedExternalIPv4_24Networks = detectedExternalIPv424Networks};
+	service::Service service1{.pid = 1, .endpoint = "/endpoint/1", .internalClientsNumber = 1, .externalClientsNumber = 3, .externalIPv4_16ClientNets = detectedExternalIPv416Networks, .externalIPv4_24ClientNets = detectedExternalIPv424Networks};
+	service::Service service2{.pid = 2, .endpoint = "/endpoint/1", .internalClientsNumber = 1, .externalClientsNumber = 3, .externalIPv4_16ClientNets = detectedExternalIPv416Networks, .externalIPv4_24ClientNets = detectedExternalIPv424Networks};
+	service::Service service3{.pid = 3, .endpoint = "/endpoint/2", .internalClientsNumber = 1, .externalClientsNumber = 3, .externalIPv4_16ClientNets = detectedExternalIPv416Networks, .externalIPv4_24ClientNets = detectedExternalIPv424Networks};
 
-	service::Service service4{.pid = 4, .endpoint = "google.com/endpoint/3", .domain = "google.com", .scheme = "http", .internalClientsNumber = 1, .externalClientsNumber = 2, .detectedExternalIPv6Networks = detectedExternalIPv6Networks};
-	service::Service service5{.pid = 5, .endpoint = "dynatrace.com/endpoint/4", .domain = "dynatrace.com", .scheme = "https", .internalClientsNumber = 1, .externalClientsNumber = 2, .detectedExternalIPv6Networks = detectedExternalIPv6Networks};
+	service::Service service4{.pid = 4, .endpoint = "google.com/endpoint/3", .domain = "google.com", .scheme = "http", .internalClientsNumber = 1, .externalClientsNumber = 2, .externalIPv6ClientsNets = externalIPv6ClientsNets};
+	service::Service service5{.pid = 5, .endpoint = "dynatrace.com/endpoint/4", .domain = "dynatrace.com", .scheme = "https", .internalClientsNumber = 1, .externalClientsNumber = 2, .externalIPv6ClientsNets = externalIPv6ClientsNets};
 
 	internalServices.emplace_back(service1);
 	internalServices.emplace_back(service2);
