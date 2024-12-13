@@ -40,41 +40,39 @@ pretty_print( std::ostream& os, boost::json::value const& jv)
         auto const& obj = jv.get_object();
         if(! obj.empty())
         {
+            os << "{";
             for(auto it = obj.begin(); it != obj.end(); ++it)
             {
                 auto val = it->value();
-                if(val.is_string() && (val.get_string().size() == 0)) {
+                if(val.is_string() && (val.get_string().size() == 0) || val.is_null()) {
                   break;
                 } 
-                os << "{";
                 os << json::serialize(it->key()) << ":";
                 pretty_print(os, val);
-                os << "}";
             }
+            os << "}";
         }
         break;
     }
 
     case json::kind::array:
     {
-        os << "[";
         auto const& arr = jv.get_array();
         if(! arr.empty())
         {
+            os << "[";
             auto it = arr.begin();
-            for(;;)
+            for(auto it = arr.begin(); it != arr.end();)
             {
                 pretty_print(os, *it);
-                if(++it == arr.end())
-                    break;
-                os << ",";
+                if(++it != arr.end()){
+                    os << ",";
+                }
             }
         }
         os << "]";
         break;
     }
-    case json::kind::null:
-        break;
     default:
         os << jv;
     }
