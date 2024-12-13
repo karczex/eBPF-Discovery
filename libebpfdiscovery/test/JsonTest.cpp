@@ -21,6 +21,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <string_view>
 
 #include <boost/describe.hpp>
 
@@ -35,6 +36,15 @@ struct testClass {
 
 BOOST_DESCRIBE_STRUCT(testClass, (), (str, empty))
 
+bool is_parsable_back(std::string_view json_string){
+	boost::system::error_code ec;
+	boost::json::parse(json_string, ec);
+	if(ec){
+		return false;
+	}
+	return true;
+}
+
 TEST_F(JsonTest, removeEmptyKeys){
 	
 	std::vector<testClass> vtc(4, {"bar", ""});
@@ -48,6 +58,7 @@ TEST_F(JsonTest, removeEmptyKeys){
 	const std::string expected{"{\"key\":[{\"str\":\"bar\"},{\"str\":\"bar\"},{\"str\":\"bar\"},{\"str\":\"bar\"}]}"};
 
 	EXPECT_EQ(buffer.str(), expected);
+	EXPECT_TRUE(is_parsable_back(buffer.str()));
 } 
 
 
