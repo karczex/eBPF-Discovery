@@ -24,11 +24,6 @@ namespace boost::json {
     void tag_invoke(json::value_from_tag, json::value& v, std::reference_wrapper<T> const& wrapped) {
         v = json::value_from(wrapped.get());
     }
-
-	//TODO: Properly implement conversion
- 	  void tag_invoke(json::value_from_tag, json::value& v, std::chrono::time_point<std::chrono::steady_clock> time) {
-        v = json::value_from(1);
-    }
 } // namespace boost::json
 
 

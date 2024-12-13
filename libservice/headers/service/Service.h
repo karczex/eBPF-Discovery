@@ -23,6 +23,7 @@
 #include <unordered_map>
 #include <vector>
 #include <boost/describe.hpp>
+#include <boost/json.hpp>
 
 namespace service {
 
@@ -40,6 +41,10 @@ struct ArrayHasher {
 
 static constexpr uint8_t ipv6NetworkPrefixBytesLen = 6;
 struct Service {
+	
+	using IPv6NetworksMap_t =  std::unordered_map<std::array<uint8_t, ipv6NetworkPrefixBytesLen>, std::chrono::time_point<std::chrono::steady_clock>, ArrayHasher>;
+	using IPv4NetworksMap_t =  std::unordered_map<uint32_t, std::chrono::time_point<std::chrono::steady_clock>>;
+	
 	uint32_t pid;
 	std::string endpoint;
 	std::string domain;
@@ -47,9 +52,9 @@ struct Service {
 	uint32_t internalClientsNumber{0u};
 	uint32_t externalClientsNumber{0u};
 
-	std::unordered_map<uint32_t, std::chrono::time_point<std::chrono::steady_clock>> detectedExternalIPv4_16Networks;
-	std::unordered_map<uint32_t, std::chrono::time_point<std::chrono::steady_clock>> detectedExternalIPv4_24Networks;
-	std::unordered_map<std::array<uint8_t, ipv6NetworkPrefixBytesLen>, std::chrono::time_point<std::chrono::steady_clock>, ArrayHasher> detectedExternalIPv6Networks;
+	IPv4NetworksMap_t detectedExternalIPv4_16Networks;
+	IPv4NetworksMap_t detectedExternalIPv4_24Networks;
+	IPv6NetworksMap_t detectedExternalIPv6Networks;
 
 	bool operator==(const Service& other) const {
 		return pid == other.pid && endpoint == other.endpoint && domain == other.domain && scheme == other.scheme && internalClientsNumber == other.internalClientsNumber &&
@@ -62,3 +67,23 @@ struct Service {
 BOOST_DESCRIBE_STRUCT(Service, (), (pid, endpoint, domain, scheme, internalClientsNumber, externalClientsNumber, detectedExternalIPv4_16Networks, detectedExternalIPv4_24Networks, detectedExternalIPv6Networks))
 
 } // namespace service
+
+namespace boost::json {
+	
+ 	  inline void tag_invoke(value_from_tag, value& v, service::Service::IPv6NetworksMap_t map) {
+			if(map.empty()){
+				v = value{};
+			} else {
+	      v = json::value_from(map.size());
+	    }
+	  }
+
+
+		inline void tag_invoke(json::value_from_tag, json::value& v, service::Service::IPv4NetworksMap_t map) {
+			if(map.empty()){
+				v = value{};
+			} else {
+	      v = json::value_from(map.size());
+	    }
+ 	  }
+}
