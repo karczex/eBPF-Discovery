@@ -29,20 +29,6 @@ namespace boost::json {
 
 
 namespace boost::json::ext {
-bool is_empty(boost::json::object const &obj){
-  if(obj.empty()){
-    return true;
-  }
-  for(auto it = obj.begin(); it != obj.end(); it++) {
-    boost::json::value val = it->value();
-
-      if (val.is_string() && !( val.get_string().size() == 0) ){
-              std::cout << "not empty val: " << val << std::endl; 
-        return false;
-    }
-  }
-  return false;
-}
 
 void
 pretty_print( std::ostream& os, boost::json::value const& jv)
