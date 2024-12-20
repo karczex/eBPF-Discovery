@@ -22,16 +22,9 @@
 #include "ebpfdiscoveryshared/Types.h"
 #include "httpparser/HttpRequestParser.h"
 #include "service/Aggregator.h"
-#include "service/IpAddressNetlinkChecker.h"
+#include "service/IpAddressCheckerImpl.h"
 
-#include <atomic>
-#include <chrono>
-#include <condition_variable>
-#include <mutex>
-#include <queue>
-#include <string>
-#include <thread>
-#include <unordered_map>
+#include <string_view>
 
 namespace ebpfdiscovery {
 
@@ -39,7 +32,7 @@ using httpparser::HttpRequestParser;
 
 class Discovery {
 public:
-	Discovery(const DiscoveryBpfFds& bpfFds);
+	Discovery(const DiscoveryBpfFds& bpfFds, const bool _enableNetworkCounters);
 	Discovery(const Discovery&) = delete;
 	Discovery& operator=(const Discovery&) = delete;
 
@@ -47,6 +40,8 @@ public:
 
 	int fetchAndHandleEvents();
 	void outputServicesToStdout();
+
+	void networkCountersCleaning();
 
 private:
 	using SavedSessionsCacheType = LRUCache<DiscoverySavedSessionKey, Session, DiscoverySavedSessionKeyHash>;
@@ -71,9 +66,9 @@ private:
 	DiscoveryBpfFds bpfFds;
 
 	SavedSessionsCacheType savedSessions;
-	service::NetlinkCalls netlinkCalls;
-	service::IpAddressNetlinkChecker ipChecker{netlinkCalls};
-	service::Aggregator serviceAggregator{ipChecker};
+	service::InterfacesReader interfacesReader;
+	service::IpAddressCheckerImpl ipChecker{interfacesReader};
+	service::Aggregator serviceAggregator;
 };
 
 } // namespace ebpfdiscovery

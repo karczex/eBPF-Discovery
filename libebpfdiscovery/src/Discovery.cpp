@@ -17,7 +17,7 @@
 #include "ebpfdiscovery/Discovery.h"
 
 #include "ebpfdiscovery/Session.h"
-#include "ebpfdiscoveryproto/Translator.h"
+#include "ebpfdiscovery/Json.h"
 #include "logging/Logger.h"
 #include "service/IpAddress.h"
 
@@ -32,10 +32,11 @@
 #include <string>
 #include <string_view>
 #include <thread>
+#include <iostream>
 
 namespace ebpfdiscovery {
 
-Discovery::Discovery(const DiscoveryBpfFds& bpfFds) : bpfFds{bpfFds}, savedSessions{DISCOVERY_MAX_SESSIONS} {
+Discovery::Discovery(const DiscoveryBpfFds& bpfFds, const bool _enableNetworkCounters) : bpfFds{bpfFds}, savedSessions{DISCOVERY_MAX_SESSIONS}, serviceAggregator{ipChecker, _enableNetworkCounters} {
 }
 
 void Discovery::init() {
@@ -62,9 +63,10 @@ void Discovery::outputServicesToStdout() {
 		return;
 	}
 
-	const auto servicesProto{proto::internalToProto(services)};
-	const auto servicesJson{proto::protoToJson(servicesProto)};
-	std::cout << servicesJson << std::endl;
+	const boost::json::object outJson{{"service", boost::json::value_from(services)}};
+	boost::json::ext::print(std::cout, outJson);
+	std::cout << std::endl;
+	
 	serviceAggregator.clear();
 }
 
@@ -215,6 +217,9 @@ void Discovery::saveSession(const DiscoverySavedSessionKey& sessionKey, const Se
 
 int Discovery::bpfDiscoveryDeleteSession(const DiscoveryTrackedSessionKey& trackedSessionKey) {
 	return bpf_map_delete_elem(bpfFds.trackedSessionsMap, &trackedSessionKey);
+}
+void Discovery::networkCountersCleaning() {
+	serviceAggregator.networkCountersCleaning();
 }
 
 } // namespace ebpfdiscovery

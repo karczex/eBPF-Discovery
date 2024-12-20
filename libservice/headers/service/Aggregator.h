@@ -21,11 +21,10 @@
 #include "ebpfdiscoveryshared/Types.h"
 #include "httpparser/HttpRequestParser.h"
 
-#include <atomic>
 #include <cstdint>
-#include <mutex>
 #include <unordered_map>
 #include <vector>
+#include <mutex>
 
 template <>
 struct std::hash<std::pair<uint32_t, std::string>> {
@@ -38,7 +37,6 @@ struct std::hash<std::pair<uint32_t, std::string>> {
 };
 
 namespace service {
-
 struct DiscoverySessionMeta {
 	DiscoverySockSourceIP sourceIP;
 	__u32 pid;
@@ -49,16 +47,23 @@ class Aggregator {
 private:
 	using ServiceKey = std::pair<uint32_t, std::string>;
 	using ServiceStorage = std::unordered_map<ServiceKey, Service>;
+	using ServicesList = std::vector<std::reference_wrapper<Service>>;
 
 public:
-	Aggregator(const service::IpAddressChecker& ipChecker);
+	Aggregator(const service::IpAddressChecker& ipChecker, bool _enableNetworkCounters);
 
 	void clear();
 	void newRequest(const httpparser::HttpRequest& request, const DiscoverySessionMeta& meta);
 	std::vector<std::reference_wrapper<Service>> collectServices();
+	void networkCountersCleaning();
+
+protected:
+	virtual std::chrono::time_point<std::chrono::steady_clock> getCurrentTime() const;
 
 private:
 	const IpAddressChecker& ipChecker;
+
+	std::mutex servicesMutex{};
 	ServiceStorage services;
 };
 
